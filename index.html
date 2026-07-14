@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Token Budget Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<div class="container">
+
+  <h1>Token Budget Tracker</h1>
+  <p class="subtitle">Track token balance — add, spend, reset, and calculate tokens from uploaded task files.</p>
+
+  <!-- Tab nav -->
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="tracker">Tracker</button>
+    <button class="tab-btn"        data-tab="calculator">File Calculator</button>
+    <button class="tab-btn"        data-tab="tasktypes">Task Types</button>
+  </div>
+
+  <!-- ═══════════════════ TAB: TRACKER ═══════════════════ -->
+  <div class="tab-panel" id="tab-tracker">
+
+    <div class="balance-card">
+      <div>
+        <div class="balance-label">Current Balance</div>
+        <div class="balance-value good" id="balanceDisplay">0</div>
+      </div>
+      <div class="balance-meta">
+        <div class="meta-item added">
+          <div class="meta-num" id="totalAdded">0</div>
+          <div class="meta-lbl">Total Added</div>
+        </div>
+        <div class="meta-item spent">
+          <div class="meta-num" id="totalSpent">0</div>
+          <div class="meta-lbl">Total Spent</div>
+        </div>
+        <div class="meta-item">
+          <div class="meta-num" id="txCount">0</div>
+          <div class="meta-lbl">Transactions</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap" style="display:none;">
+      <div class="progress-header">
+        <span id="progressLabel">Budget Usage</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill" style="width:0%;"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <h2>Actions</h2>
+      <div class="form-row">
+        <div class="field">
+          <label for="amountInput">Amount</label>
+          <input type="number" id="amountInput" min="1" placeholder="e.g. 100" />
+        </div>
+        <div class="field">
+          <label for="noteInput">Note (optional)</label>
+          <input type="text" id="noteInput" placeholder="e.g. Daily allowance" maxlength="80" />
+        </div>
+        <div class="btn-group">
+          <button class="btn-add"   id="btnAdd">+ Add</button>
+          <button class="btn-spend" id="btnSpend">− Spend</button>
+          <button class="btn-reset" id="btnReset">↺ Reset</button>
+        </div>
+      </div>
+      <div class="error-msg" id="errorMsg"></div>
+      <div class="budget-row">
+        <label for="budgetInput">Budget Cap</label>
+        <input type="number" id="budgetInput" min="1" placeholder="e.g. 1000" />
+        <button class="btn-budget" id="btnSetBudget">Set Budget</button>
+        <span id="budgetInfo"></span>
+      </div>
+    </div>
+
+    <div class="history-section">
+      <div class="history-header">
+        <h2>Transaction History</h2>
+        <button class="btn-clear-history" id="btnClearHistory">Clear History</button>
+      </div>
+      <ul class="history-list" id="historyList">
+        <li class="history-empty">No transactions yet.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ TAB: FILE CALCULATOR ═══════════════════ -->
+  <div class="tab-panel hidden" id="tab-calculator">
+
+    <div class="controls">
+      <h2>Upload Task File</h2>
+      <p class="section-hint">
+        Upload a <strong>CSV</strong> or <strong>TSV</strong> file in the wide format:
+        <code>Ticket ID</code>, <code>Ticket Description</code>, <code>Market</code>, <code>Status</code>,
+        <code>Total No. of Tokens</code>, then one column per task type with the <strong>quantity</strong> in each cell.
+        Token costs come from the Task Types tab.
+      </p>
+
+      <div class="upload-row">
+        <label class="upload-label" for="fileInput">
+          <span id="fileLabel">Choose CSV or TSV file…</span>
+          <input type="file" id="fileInput" accept=".csv,.tsv,.txt" />
+        </label>
+        <button class="btn-calc" id="btnCalculate">Calculate Tokens</button>
+      </div>
+
+      <div class="template-links">
+        <span class="muted">Sample:</span>
+        <button class="btn-sample" id="btnSampleCsv">Download sample CSV</button>
+        <button class="btn-sample" id="btnSampleTsv">Download sample TSV</button>
+      </div>
+
+      <div class="error-msg" id="calcError"></div>
+    </div>
+
+    <!-- Summary bar -->
+    <div class="calc-result hidden" id="calcResult">
+      <div class="result-summary">
+        <div class="summary-stats">
+          <div class="stat-box">
+            <div class="balance-label">Calculated Total</div>
+            <div class="balance-value good" id="calcTotal">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="balance-label">File Claimed Total</div>
+            <div class="balance-value" id="calcClaimed" style="color:#3b82d4;">0</div>
+          </div>
+          <div class="stat-box">
+            <div class="balance-label">Tickets</div>
+            <div class="balance-value" id="calcTicketCount" style="color:#57606a;font-size:32px;">0</div>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="btn-add"   id="btnPushAdd">+ Add to Balance</button>
+          <button class="btn-spend" id="btnPushSpend">− Spend from Balance</button>
+        </div>
+      </div>
+      <div class="warn-msg" id="calcWarn"></div>
+
+      <!-- Per-ticket breakdown accordion -->
+      <div class="history-section" style="margin-top:16px;">
+        <div class="history-header">
+          <h2>Ticket Breakdown</h2>
+          <span class="muted" id="calcRowCount"></span>
+        </div>
+        <div id="ticketAccordion"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ TAB: TASK TYPES ═══════════════════ -->
+  <div class="tab-panel hidden" id="tab-tasktypes">
+
+    <div class="controls">
+      <h2>Manage Task Types</h2>
+      <p class="section-hint">
+        Each task type name must exactly match a column header in your CSV/TSV file (case-insensitive).
+        The token value is the cost <strong>per unit</strong> of that task type.
+      </p>
+      <div class="form-row">
+        <div class="field">
+          <label for="ttName">Column / Type Name</label>
+          <input type="text" id="ttName" placeholder="e.g. New journey- simple" maxlength="120" />
+        </div>
+        <div class="field" style="max-width:140px;">
+          <label for="ttTokens">Tokens / unit</label>
+          <input type="number" id="ttTokens" min="0.1" step="0.1" placeholder="e.g. 10" />
+        </div>
+        <div class="btn-group">
+          <button class="btn-add" id="btnAddType">Add Type</button>
+        </div>
+      </div>
+      <div class="error-msg" id="ttError"></div>
+    </div>
+
+    <div class="history-section">
+      <div class="history-header">
+        <h2>Configured Task Types</h2>
+        <span class="muted" id="ttCount"></span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="breakdown-table" id="taskTypeTable">
+          <thead><tr><th>Column Name</th><th>Tokens / Unit</th><th>Edit</th><th>Delete</th></tr></thead>
+          <tbody id="taskTypeBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>Made with IBM Bob</footer>
+<script src="app.js"></script>
+</body>
+</html>
