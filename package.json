@@ -1,0 +1,24 @@
+{
+  "name": "token-budget-tracker",
+  "version": "1.0.0",
+  "description": "A general-purpose token budget tracker web app",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "license": "MIT",
+  "allowScripts": {
+    "better-sqlite3@12.11.1": true
+  }
+}

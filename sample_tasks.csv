@@ -1,0 +1,15 @@
+task,type
+Design homepage mockup,design
+Design login screen,design
+Implement login API,development
+Build user dashboard,development
+Implement payment gateway,development
+Code review PR #42,review
+Code review PR #55,review
+Write unit tests for auth,testing
+Write integration tests,testing
+QA regression test,testing
+Deploy to staging,deployment
+Deploy to production,deployment
+Update README,documentation
+Write API docs,documentation
